@@ -30,15 +30,27 @@ namespace RestfulCustomerElephantService.Controllers
 
         // GET api/<ElephantsController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            var elephant = GetElephantById(id);
+            if (elephant != null)
+            {
+                return Ok(elephant);
+            }
+            else
+            {
+                return NotFound(new {message = "Id is not found"});
+            }
+
+
         }
 
         // POST api/<ElephantsController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] Elephant newElephant)
         {
+            _dbList.Add(newElephant);
+            return CreatedAtAction("Get", new {id = newElephant.Id}, newElephant);
         }
 
         // PUT api/<ElephantsController>/5
@@ -51,6 +63,12 @@ namespace RestfulCustomerElephantService.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+        }
+
+        public Elephant GetElephantById(int id)
+        {
+            var elephant = _dbList.FirstOrDefault(e => e.Id == id);
+            return elephant;
         }
     }
 }
